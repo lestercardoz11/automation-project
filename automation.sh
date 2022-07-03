@@ -31,8 +31,6 @@ fi
 tar -zvcf /tmp/${myname}-httpd-logs-${timestamp}.tar /var/log/apache2/*.log
 
 
-# Uploading to S3 bucket
-
 if [ $(dpkg --list | grep awscli | cut -d ' ' -f 3 | head -1) == 'awscli' ]
         then
                 aws s3 \
@@ -47,4 +45,35 @@ if [ $(dpkg --list | grep awscli | cut -d ' ' -f 3 | head -1) == 'awscli' ]
 
 fi
 
+
+if [ -f "/var/www/html/inventory.html" ]
+	then
+		printf "<p>" >> /var/www/html/inventory.html
+		printf "\n\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 10 | cut -d '-' -f 2,3 | tail -1)" >> /var/www/html/inventory.html
+		printf "\t\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 10 | cut -d '-' -f 4,5 | cut -d '.' -f 1 | tail -1)" >> /var/www/html/inventory.html
+		printf "\t\t\t $(ls -lrth /tmp | grep httpd | cut -d ' ' -f 10 | cut -d '-' -f 4,5 | cut -d '.' -f 2 | tail -1 )" >> /var/www/html/inventory.html
+		printf "\t\t\t\t$(ls -lrth /tmp/ | grep httpd | cut -d ' ' -f 6 | tail -1)" >> /var/www/html/inventory.html
+		printf "</p>" >> /var/www/html/inventory.html
+	else
+		touch /var/www/html/inventory.html
+		printf "<p>" >> /var/www/html/inventory.html
+		printf "\tLog-Type\tDate-Created\tType\tSize" >> /var/www/html/inventory.html
+		printf "</p>" >> /var/www/html/inventory.html
+		printf "<p>" >> /var/www/html/inventory.html
+		printf "\n\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 10 | cut -d '-' -f 2,3 | tail -1)" >> /var/www/html/inventory.html
+		printf "\t\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 10 | cut -d '-' -f 4,5 | cut -d '.' -f 1 | tail -1)" >> /var/www/html/inventory.html
+		printf "\t\t\t $(ls -lrth /tmp | grep httpd | cut -d ' ' -f 10 | cut -d '-' -f 4,5 | cut -d '.' -f 2 | tail -1)" >> /var/www/html/inventory.html
+		printf "\t\t\t\t$(ls -lrth /tmp/ | grep httpd | cut -d ' ' -f 6 |tail -1)" >> /var/www/html/inventory.html
+		printf "</p>" >> /var/www/html/inventory.html
+fi
+
+
+
+if [ -f "/etc/cron.d/automation" ];
+	then
+		echo "Automation at 00:00 hrs"
+	else
+		touch /etc/cron.d/automation
+		printf "0 0 * * * root /root/Automation_Project/auotmation.sh" > /etc/cron.d/automation
+fi
 
