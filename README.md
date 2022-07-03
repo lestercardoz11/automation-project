@@ -1,4 +1,4 @@
-# automation-project
+# Automation Project
 
 1. Perform an update of the package details and the package list at the start of the script.
 `sudo apt update -y`
